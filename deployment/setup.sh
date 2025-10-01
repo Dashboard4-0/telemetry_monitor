@@ -39,7 +39,7 @@ pip install --upgrade pip --quiet
 
 # Install requirements
 echo "Installing required packages..."
-pip install -r requirements.txt
+pip install -r deployment/requirements.txt
 
 if [ $? -eq 0 ]; then
     echo "✓ All packages installed successfully"
@@ -52,7 +52,7 @@ fi
 if [ ! -f ".env" ]; then
     echo ""
     echo "Creating .env file from template..."
-    cp .env.sample .env
+    cp deployment/.env.sample .env
     echo "✓ Created .env file"
     echo ""
     echo "IMPORTANT: Edit the .env file with your Supabase credentials:"

@@ -6,8 +6,23 @@ Handles data storage to Supabase with both historical and real-time tables
 import os
 from typing import Dict, List, Any, Optional
 from datetime import datetime
-from supabase import create_client, Client
 import json
+import ssl
+import httpx
+
+# Disable SSL verification for Docker environments
+if os.getenv('DOCKER_ENV', 'false').lower() == 'true':
+    # Monkey-patch httpx to disable SSL verification globally
+    import warnings
+    warnings.filterwarnings('ignore')
+    
+    _original_init = httpx.Client.__init__
+    def _patched_init(self, *args, **kwargs):
+        kwargs['verify'] = False
+        _original_init(self, *args, **kwargs)
+    httpx.Client.__init__ = _patched_init
+
+from supabase import create_client, Client
 
 
 class SupabaseManager:
@@ -30,13 +45,12 @@ class SupabaseManager:
     
     def _ensure_tables_exist(self):
         """Ensure required tables exist in Supabase"""
-        # Note: In production, you should create these tables via Supabase dashboard
-        # or migrations. This is a reference for the expected schema.
-        
         print("""
-        Please ensure the following tables exist in your Supabase database:
+        ⚠️  Supabase tables need to be created before using the application.
         
-        1. plc_data_historical:
+        📋 Required Tables:
+        
+        1. plc_data_historical (stores all data points):
            - id (bigint, primary key, auto-increment)
            - plc_name (text)
            - tag_name (text)
@@ -44,48 +58,31 @@ class SupabaseManager:
            - timestamp (timestamptz)
            - created_at (timestamptz, default: now())
            
-        2. plc_data_realtime:
-           - id (text, primary key) - Composite key: plc_name + tag_name
+        2. plc_data_realtime (stores latest values only):
+           - id (text, primary key) - Composite key: plc_name + "_" + tag_name
            - plc_name (text)
            - tag_name (text)
            - tag_value (jsonb)
            - timestamp (timestamptz)
            - updated_at (timestamptz, default: now())
-           
-        You can create these tables using the following SQL in Supabase SQL editor:
+        
+        🚀 Quick Setup Options:
+        
+        Option 1 - Minimal Setup:
+        Copy and run: deployment/supabase_schema_minimal.sql in Supabase SQL Editor
+        
+        Option 2 - Complete Setup (Recommended):
+        Copy and run: deployment/supabase_schema.sql in Supabase SQL Editor
+        
+        📖 The complete setup includes:
+        - Tables with proper indexes
+        - Row Level Security (RLS) policies
+        - Helper functions for data queries
+        - Useful views for monitoring
+        - Automated cleanup functions
+        
+        💡 After creating tables, restart the application to begin data collection.
         """)
-        
-        sql_commands = """
-        -- Historical data table
-        CREATE TABLE IF NOT EXISTS plc_data_historical (
-            id BIGSERIAL PRIMARY KEY,
-            plc_name TEXT NOT NULL,
-            tag_name TEXT NOT NULL,
-            tag_value JSONB,
-            timestamp TIMESTAMPTZ NOT NULL,
-            created_at TIMESTAMPTZ DEFAULT NOW()
-        );
-
-        -- Create index for faster queries
-        CREATE INDEX IF NOT EXISTS idx_historical_plc_tag_time 
-        ON plc_data_historical(plc_name, tag_name, timestamp DESC);
-
-        -- Real-time data table
-        CREATE TABLE IF NOT EXISTS plc_data_realtime (
-            id TEXT PRIMARY KEY,
-            plc_name TEXT NOT NULL,
-            tag_name TEXT NOT NULL,
-            tag_value JSONB,
-            timestamp TIMESTAMPTZ NOT NULL,
-            updated_at TIMESTAMPTZ DEFAULT NOW()
-        );
-
-        -- Create index for faster queries
-        CREATE INDEX IF NOT EXISTS idx_realtime_plc_tag 
-        ON plc_data_realtime(plc_name, tag_name);
-        """
-        
-        print(sql_commands)
     
     def insert_historical_data(self, plc_name: str, tag_data: Dict[str, Any], timestamp: datetime = None) -> bool:
         """Insert data into historical table"""

@@ -1,0 +1,4 @@
+controller_type: CompactLogix
+ip_address: 16.191.1.131
+driver: LogixDriver
+slot: 0

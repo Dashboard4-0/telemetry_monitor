@@ -24,11 +24,11 @@ cp .env.sample .env
 2. Create a new project or use existing
 3. Go to SQL Editor and run:
 
-```sql
--- Create tables (copy from README.md)
-CREATE TABLE plc_data_historical (...);
-CREATE TABLE plc_data_realtime (...);
-```
+**Quick Setup**: Copy and run `deployment/supabase_schema_minimal.sql`
+
+**Complete Setup**: Copy and run `deployment/supabase_schema.sql`
+
+See `deployment/SUPABASE_SETUP.md` for detailed instructions.
 
 4. Get your credentials from Settings > API:
    - Copy the URL and anon key to `.env`:
@@ -126,13 +126,30 @@ ORDER BY timestamp DESC;
 
 ## 🐳 Docker Deployment
 
-```bash
-# Using Docker Compose
-docker-compose up -d
+### Quick Start
 
-# Access the container
-docker exec -it plc-data-collector python main.py
+```bash
+# From the project root directory
+cd deployment
+./build.sh
+
+# Or manually with Docker Compose
+docker-compose -f deployment/docker-compose.yml up -d
+
+# Access the container interactively
+docker-compose -f deployment/docker-compose.yml run --rm plc-collector
 ```
+
+### Docker Configuration
+
+The Docker setup includes:
+- Multi-stage build for optimized image size
+- Proper file copying from correct source directories
+- Environment variable configuration
+- Volume mounts for persistent configuration
+- Host network mode for PLC access
+
+See `deployment/DOCKER_README.md` for detailed Docker deployment instructions.
 
 ## 🔧 Troubleshooting Quick Fixes
 

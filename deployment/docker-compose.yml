@@ -1,8 +1,8 @@
-version: '3.8'
-
 services:
   plc-collector:
-    build: .
+    build:
+      context: ..
+      dockerfile: deployment/Dockerfile
     container_name: plc-data-collector
     environment:
       # Supabase Configuration

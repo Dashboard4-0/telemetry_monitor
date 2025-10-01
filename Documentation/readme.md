@@ -32,37 +32,13 @@ cd plc_data_collector
 pip install -r requirements.txt
 ```
 
-3. Set up Supabase database tables (run these SQL commands in Supabase SQL editor):
+3. Set up Supabase database tables:
 
-```sql
--- Historical data table
-CREATE TABLE IF NOT EXISTS plc_data_historical (
-    id BIGSERIAL PRIMARY KEY,
-    plc_name TEXT NOT NULL,
-    tag_name TEXT NOT NULL,
-    tag_value JSONB,
-    timestamp TIMESTAMPTZ NOT NULL,
-    created_at TIMESTAMPTZ DEFAULT NOW()
-);
+**Quick Setup**: Copy and run `deployment/supabase_schema_minimal.sql` in Supabase SQL Editor
 
--- Create index for faster queries
-CREATE INDEX IF NOT EXISTS idx_historical_plc_tag_time 
-ON plc_data_historical(plc_name, tag_name, timestamp DESC);
+**Complete Setup** (Recommended): Copy and run `deployment/supabase_schema.sql` in Supabase SQL Editor
 
--- Real-time data table
-CREATE TABLE IF NOT EXISTS plc_data_realtime (
-    id TEXT PRIMARY KEY,
-    plc_name TEXT NOT NULL,
-    tag_name TEXT NOT NULL,
-    tag_value JSONB,
-    timestamp TIMESTAMPTZ NOT NULL,
-    updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Create index for faster queries
-CREATE INDEX IF NOT EXISTS idx_realtime_plc_tag 
-ON plc_data_realtime(plc_name, tag_name);
-```
+See `deployment/SUPABASE_SETUP.md` for detailed setup instructions.
 
 4. Configure environment variables:
 ```bash
@@ -318,7 +294,7 @@ Planned features for future versions:
 - [ ] Alert and notification system
 - [ ] OPC UA support
 - [ ] Modbus TCP support
-- [ ] Docker containerization
+- [x] Docker containerization
 - [ ] Grafana integration
 - [ ] Data transformation and calculations
 
