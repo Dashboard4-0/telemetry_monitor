@@ -1,0 +1,197 @@
+NAME	DESCRIPTION	DATATYPE
+Local:1:I		AB:1769_DI32:I:0
+Local:2:I		AB:1769_DI32:I:0
+Local:3:C		AB:1769_DO16:C:0
+Local:3:I		AB:1769_DO16:I:0
+Local:3:O		AB:1769_DO16:O:0
+Local:4:C		AB:1769_DO16:C:0
+Local:4:I		AB:1769_DO16:I:0
+Local:4:O		AB:1769_DO16:O:0
+Local:5:C		AB:1769_DO16:C:0
+Local:5:I		AB:1769_DO16:I:0
+Local:5:O		AB:1769_DO16:O:0
+Local:6:C		AB:1769_OF4VI:C:0
+Local:6:I		AB:1769_OF4VI:I:0
+Local:6:O		AB:1769_OF4VI:O:0
+AllDrivesEnabled		BOOL
+AllDrivesHomed		BOOL
+Aux_Cam		BOOL[32]
+Avg_Speed		INT
+B3_0	SCADA counter reset	BOOL[32]
+Bagger_Enable_2		BOOL
+Blockade_Cam		BOOL
+C5_0		COUNTER[32]
+Cam_Data		INT[15]
+Control		CONTROL[5]
+Count_Blade_PEC		COUNTER
+Current_Product		INT
+DelayStart		TIMER
+DisableForTuning		BOOL
+DischargeAccel		REAL
+DischargeCammed		BOOL
+DischargeCamprofile		CAM_PROFILE[5]
+DischargeChangeOffset		BOOL
+DischargeControl		UDT_Motion_Instructions
+DischargeDev		REAL
+DischargeDiff		REAL
+DischargeMoveType		DINT
+DischargeOffset		REAL
+DischargeOffsetAccel		DINT
+DischargeOffsetPosition		REAL
+DischargeOffsetSpeed		DINT
+DischargeRecoverPosition		REAL
+DischargeSlope		REAL
+DischargeSpeed		REAL
+DischargeStepNumber		DINT
+Discharge_Torque_Limit		REAL
+Double_Cam		BOOL
+Fault		BOOL[64]
+Fault_Display_Timer		TIMER
+HMI_Bit		BOOL[32]
+HMI_Bit	Manual Wicket HMI	
+HMI_Numeric_Data		DINT[20]
+HMI_Speed_Data		INT[10]
+HomeMasterEncoder		BOOL
+HomeWicket		BOOL
+HomeWicketSeq		DINT
+I100		
+I101		
+I102	SLICER INFEED PEC 1	
+I103	SLICER INFEED PEC 2	
+I104		
+I105		
+I106		
+I107		
+I108		
+I109		
+I110		
+I111		
+I112		
+I113		
+I115		
+I116	SLICER SYNCHRO PEC	
+I117		
+I118		
+I119	Bags in position proximity sensor.	
+I120		
+I121		
+I122	Wicket change cylinder reed switch (L).	
+I123	Wicket change cylinder reed switch (R).	
+I124	Bag empty sensor on wicket change	
+i125		
+I127		
+I200		
+I201		
+I202		
+I203		
+I204		
+I213		
+I214		
+I215		
+I216		
+I217		
+I218		
+I219		
+I220		
+I221		
+I222		
+I223		
+InfeedAccel		REAL
+InfeedCammed		BOOL
+InfeedCamprofile		CAM_PROFILE[5]
+InfeedChangeOffset		BOOL
+InfeedControl		UDT_Motion_Instructions
+InfeedDev		REAL
+InfeedDiff		REAL
+InfeedMoveType		DINT
+InfeedOffset		REAL
+InfeedOffsetAccel		DINT
+InfeedOffsetPosition		REAL
+InfeedOffsetSpeed		DINT
+InfeedRecoverPosition		REAL
+InfeedSlope		REAL
+InfeedSpeed		REAL
+InfeedStepNumber		DINT
+Infeed_Torque_Limit		REAL
+LoaderInterlockData		INT
+Locked_RCP_Mode		BOOL
+MAFR		MOTION_INSTRUCTION[4]
+MAH		MOTION_INSTRUCTION[5]
+MAJ		MOTION_INSTRUCTION[3]
+MAS		MOTION_INSTRUCTION[3]
+MASR		MOTION_INSTRUCTION[4]
+Master_Encoder_Marker_Homed_Offset		REAL
+Master_Encoder_Marker_Offset		REAL
+Master_Encoder_Ref_Range		BOOL
+MC_Avg_Speed		REAL
+Message		BOOL[64]
+MotionGroupOK		BOOL
+MSF		MOTION_INSTRUCTION[3]
+MSO		MOTION_INSTRUCTION[3]
+MTimer		TIMER[6]
+N7_0		DINT[32]
+N8_0		DINT[2]
+N_Test		BOOL
+O300		
+O301		
+O302		
+O303		
+O304		
+O400		
+O401		
+O402		
+O403		
+O404		
+O406		
+O407		
+O414		
+O415		
+O500	SLICER BLADES INV ENABLE	
+O501	SLICER BELTS INV ENABLE	
+O502		
+One_Shot		BOOL[32]
+Pause_Bit		BOOL
+Pointer_Bit		DINT
+Product_Data		INT[8]
+Product_to_Bagger		DINT
+Prod_One_Shot		BOOL[32]
+Recipe		INT[6,8]
+ResetTime		TIMER
+RunningDischargeCamOffset		REAL
+RunningDischargeOffset		REAL
+RunningDischargeOffsetDiff		REAL
+RunningInfeedCamOffset		REAL
+RunningInfeedOffset		REAL
+RunningInfeedOffsetDiff		REAL
+Scoop_Cam		BOOL
+Servo_Ref_Complete		BOOL
+SLICER_RUNOUT_HMI	SLICER RUNOUT BUTTON ON HMI	BOOL
+SLICER_RUNOUT_TIMER		TIMER
+SRCam_Data		INT[2]
+StartCam		BOOL
+Store		BOOL[32]
+Synchro_Cam		BOOL
+T4_0		TIMER[32]
+test		BOOL
+Toggle		BOOL[32]
+WicketDown		BOOL
+WicketDownAccel		DINT
+WicketDownSpeed		DINT
+WicketMAH		MOTION_INSTRUCTION
+WicketMAJ		MOTION_INSTRUCTION[5]
+WicketMAM		MOTION_INSTRUCTION
+WicketMAS		MOTION_INSTRUCTION[10]
+WicketUp		BOOL
+WicketUpSpeed		DINT
+Wicket_Bottom_Pulse		BOOL
+Wicket_Height		REAL
+Wicket_Height_OverLimit		REAL
+Wicket_LEFT_RGHT_Memory		BOOL
+Wick_1		BOOL
+Wick_2		BOOL
+MotionGroup		MOTION_GROUP
+Discharge_Axis		AXIS_SERVO_DRIVE
+Infeed_Axis		AXIS_SERVO_DRIVE
+Master_Encoder		AXIS_SERVO_DRIVE
+Wicket_Axis		AXIS_SERVO_DRIVE
+LoaderInterlock		MESSAGE
