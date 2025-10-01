@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  plc-collector:
+    build: .
+    container_name: plc-data-collector
+    environment:
+      # Supabase Configuration
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+      # Optional settings
+      - DEFAULT_SCAN_RATE=${DEFAULT_SCAN_RATE:-1.0}
+      - HISTORICAL_DATA_RETENTION_DAYS=${HISTORICAL_DATA_RETENTION_DAYS:-30}
+    volumes:
+      # Persist configuration between runs
+      - ./configs:/app/configs
+      - ./logs:/app/logs
+    network_mode: host  # Required for PLC network access
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    # Uncomment to run in collection mode automatically
+    # command: python main.py --collect
+
+# Optional: Add a Grafana service for visualization
+# grafana:
+#   image: grafana/grafana:latest
+#   container_name: plc-grafana
+#   ports:
+#     - "3000:3000"
+#   environment:
+#     - GF_SECURITY_ADMIN_PASSWORD=admin
+#   volumes:
+#     - grafana-storage:/var/lib/grafana
+#   restart: unless-stopped
+
+volumes:
+  grafana-storage:
