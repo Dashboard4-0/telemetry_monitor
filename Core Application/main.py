@@ -20,7 +20,8 @@ import signal
 
 from plc_config import PLCConfig
 from plc_connection import PLCManager
-from database_manager import SupabaseManager
+from database_factory import DatabaseFactory
+from startup_wizard import StartupWizard
 
 
 # Initialize colorama for colored console output
@@ -39,8 +40,10 @@ class PLCDataCollector:
         self.config_manager = PLCConfig()
         self.plc_manager = PLCManager()
         self.db_manager = None
+        self.database_factory = DatabaseFactory()
+        self.startup_wizard = StartupWizard()
         
-        # Initialize Supabase if credentials are available
+        # Initialize database (with startup wizard if needed)
         self._init_database()
         
         # Data collection control
@@ -54,12 +57,25 @@ class PLCDataCollector:
     def _init_database(self):
         """Initialize database connection"""
         try:
-            self.db_manager = SupabaseManager()
-            if self.db_manager.test_connection():
+            # Check if this is first run and run wizard if needed
+            if self.startup_wizard.is_first_run():
+                print(f"{Fore.YELLOW}First time setup detected. Running database configuration wizard...{Style.RESET_ALL}")
+                wizard_result = self.startup_wizard.run_wizard()
+                if wizard_result is None:
+                    print(f"{Fore.RED}✗ Database configuration failed{Style.RESET_ALL}")
+                    return
+            
+            # Create database manager using factory
+            self.db_manager = self.database_factory.create_database_manager()
+            
+            if self.db_manager:
                 print(f"{Fore.GREEN}✓ Database connected{Style.RESET_ALL}")
+            else:
+                print(f"{Fore.YELLOW}⚠ Database not configured or connection failed{Style.RESET_ALL}")
+                
         except Exception as e:
-            print(f"{Fore.YELLOW}⚠ Database not configured: {e}{Style.RESET_ALL}")
-            print(f"{Fore.YELLOW}  Set SUPABASE_URL and SUPABASE_KEY in .env file{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}⚠ Database initialization error: {e}{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}  Run the startup wizard to configure your database{Style.RESET_ALL}")
     
     def _signal_handler(self, signum, frame):
         """Handle shutdown signals"""
@@ -439,7 +455,7 @@ class PLCDataCollector:
     def run_interactive(self):
         """Run interactive CLI menu"""
         print(f"\n{Fore.CYAN}{'='*50}{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}    PLC Data Collector for Supabase    {Style.RESET_ALL}")
+        print(f"{Fore.CYAN}    PLC Data Collector    {Style.RESET_ALL}")
         print(f"{Fore.CYAN}{'='*50}{Style.RESET_ALL}")
         
         while True:
@@ -451,7 +467,8 @@ class PLCDataCollector:
             print("5. Start data collection")
             print("6. Stop data collection")
             print("7. View collected data")
-            print("8. Exit")
+            print("8. Database management")
+            print("9. Exit")
             
             try:
                 choice = input("\nSelect option: ").strip()
@@ -477,6 +494,8 @@ class PLCDataCollector:
                 elif choice == '7':
                     self.view_data()
                 elif choice == '8':
+                    self.database_management()
+                elif choice == '9':
                     self.stop_collection()
                     print(f"\n{Fore.CYAN}Goodbye!{Style.RESET_ALL}")
                     break
@@ -487,11 +506,51 @@ class PLCDataCollector:
                 print(f"\n{Fore.YELLOW}Use option 8 to exit{Style.RESET_ALL}")
             except Exception as e:
                 print(f"{Fore.RED}Error: {e}{Style.RESET_ALL}")
+    
+    def database_management(self):
+        """Database management menu"""
+        print(f"\n{Fore.CYAN}=== Database Management ==={Style.RESET_ALL}")
+        print("1. Show current database info")
+        print("2. Reconfigure database")
+        print("3. Test database connection")
+        print("4. Database statistics")
+        print("5. Back to main menu")
+        
+        try:
+            choice = int(input("Select option: "))
+            
+            if choice == 1:
+                self.startup_wizard.show_database_info()
+            elif choice == 2:
+                print(f"\n{Fore.YELLOW}This will reset your database configuration.{Style.RESET_ALL}")
+                confirm = input("Are you sure? (y/n): ").strip().lower()
+                if confirm == 'y':
+                    self.startup_wizard.reset_configuration()
+                    print(f"{Fore.YELLOW}Please restart the application to reconfigure your database.{Style.RESET_ALL}")
+            elif choice == 3:
+                if self.db_manager:
+                    if self.db_manager.test_connection():
+                        print(f"{Fore.GREEN}✓ Database connection successful{Style.RESET_ALL}")
+                    else:
+                        print(f"{Fore.RED}✗ Database connection failed{Style.RESET_ALL}")
+                else:
+                    print(f"{Fore.YELLOW}No database manager initialized{Style.RESET_ALL}")
+            elif choice == 4:
+                if self.db_manager:
+                    self._view_statistics()
+                else:
+                    print(f"{Fore.YELLOW}No database manager initialized{Style.RESET_ALL}")
+            elif choice == 5:
+                return
+            else:
+                print(f"{Fore.RED}✗ Invalid selection{Style.RESET_ALL}")
+        except ValueError:
+            print(f"{Fore.RED}✗ Invalid input{Style.RESET_ALL}")
 
 
 def main():
     """Main entry point"""
-    parser = argparse.ArgumentParser(description='PLC Data Collector for Supabase')
+    parser = argparse.ArgumentParser(description='PLC Data Collector')
     parser.add_argument('--setup', action='store_true', help='Setup a new PLC')
     parser.add_argument('--list', action='store_true', help='List configured PLCs')
     parser.add_argument('--test', metavar='NAME', help='Test PLC connection')

@@ -23,9 +23,10 @@ if os.getenv('DOCKER_ENV', 'false').lower() == 'true':
     httpx.Client.__init__ = _patched_init
 
 from supabase import create_client, Client
+from database_interface import DatabaseManager
 
 
-class SupabaseManager:
+class SupabaseManager(DatabaseManager):
     """Manages Supabase database operations for PLC data"""
     
     def __init__(self, url: str = None, key: str = None):

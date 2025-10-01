@@ -52,12 +52,20 @@ fi
 if [ ! -f ".env" ]; then
     echo ""
     echo "Creating .env file from template..."
-    cp deployment/.env.sample .env
+    cp deployment/env.sample .env
     echo "✓ Created .env file"
     echo ""
-    echo "IMPORTANT: Edit the .env file with your Supabase credentials:"
+    echo "IMPORTANT: The application now supports both Supabase and SQLite databases."
+    echo "You can either:"
+    echo "  1. Configure database settings in the .env file, OR"
+    echo "  2. Run the application and use the interactive setup wizard"
+    echo ""
+    echo "For Supabase, configure:"
     echo "  - SUPABASE_URL"
     echo "  - SUPABASE_KEY"
+    echo ""
+    echo "For SQLite, configure:"
+    echo "  - SQLITE_DB_PATH (optional, defaults to ./data/plc_data.db)"
     echo ""
     read -p "Would you like to edit .env now? (y/n): " edit_env
     if [ "$edit_env" = "y" ]; then
@@ -72,6 +80,7 @@ echo ""
 echo "Creating configuration directories..."
 mkdir -p configs/plc_configs
 mkdir -p configs/tag_lists
+mkdir -p data  # For SQLite database
 echo "✓ Configuration directories created"
 
 # Test imports

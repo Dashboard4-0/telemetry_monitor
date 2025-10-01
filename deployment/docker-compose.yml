@@ -5,9 +5,12 @@ services:
       dockerfile: deployment/Dockerfile
     container_name: plc-data-collector
     environment:
-      # Supabase Configuration
+      # Database Configuration (choose one)
+      # For Supabase:
       - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_KEY=${SUPABASE_KEY}
+      # For SQLite (optional, defaults to /app/data/plc_data.db):
+      - SQLITE_DB_PATH=${SQLITE_DB_PATH:-/app/data/plc_data.db}
       # Optional settings
       - DEFAULT_SCAN_RATE=${DEFAULT_SCAN_RATE:-1.0}
       - HISTORICAL_DATA_RETENTION_DAYS=${HISTORICAL_DATA_RETENTION_DAYS:-30}
@@ -15,6 +18,8 @@ services:
       # Persist configuration between runs
       - ./configs:/app/configs
       - ./logs:/app/logs
+      # SQLite database persistence (if using SQLite)
+      - ./data:/app/data
     network_mode: host  # Required for PLC network access
     restart: unless-stopped
     stdin_open: true

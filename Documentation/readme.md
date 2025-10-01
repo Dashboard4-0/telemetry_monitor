@@ -1,10 +1,12 @@
-# PLC Data Collector for Supabase
+# PLC Data Collector
 
-A robust Python tool for collecting data from Allen-Bradley CompactLogix and MicroLogix PLCs using pycomm3, with automatic storage to Supabase database in both historical and real-time formats.
+A robust Python tool for collecting data from Allen-Bradley CompactLogix and MicroLogix PLCs using pycomm3, with flexible database storage options supporting both cloud (Supabase) and local (SQLite) databases.
 
 ## Features
 
 - ✅ Support for multiple PLC types (CompactLogix, ControlLogix, MicroLogix 1100/1400, Micro850/870)
+- ✅ **Dual Database Support**: Choose between Supabase (cloud) or SQLite (local) storage
+- ✅ **Interactive Setup Wizard**: Easy first-time configuration with guided database selection
 - ✅ CSV-based tag list import for easy configuration
 - ✅ Concurrent data collection from multiple PLCs
 - ✅ Dual storage modes: Historical (append) and Real-time (upsert)
@@ -13,38 +15,94 @@ A robust Python tool for collecting data from Allen-Bradley CompactLogix and Mic
 - ✅ Configurable scan rates per tag
 - ✅ Automatic reconnection on connection loss
 - ✅ Thread-safe data collection
+- ✅ **Database Migration Tools**: Migrate data between Supabase and SQLite
 
 ## Prerequisites
 
 - Python 3.8 or higher
 - Network access to your PLCs
-- Supabase account with a project created
+- **For Supabase**: Supabase account with a project created
+- **For SQLite**: No additional requirements (uses local file storage)
 
-## Installation
+## Quick Start
 
-1. Clone or download this repository:
+### 1. Installation
+
 ```bash
+# Clone or download this repository
 cd plc_data_collector
+
+# Install required packages
+pip install -r deployment/requirements.txt
 ```
 
-2. Install required packages:
+### 2. First-Time Setup
+
+Run the application for the first time to launch the interactive database setup wizard:
+
 ```bash
-pip install -r requirements.txt
+python Core\ Application/main.py
 ```
 
-3. Set up Supabase database tables:
+The wizard will guide you through:
+- **Database Selection**: Choose between Supabase (cloud) or SQLite (local)
+- **Configuration**: Enter connection details for your chosen database
+- **Testing**: Verify your database connection
 
-**Quick Setup**: Copy and run `deployment/supabase_schema_minimal.sql` in Supabase SQL Editor
+### 3. Database Options
 
-**Complete Setup** (Recommended): Copy and run `deployment/supabase_schema.sql` in Supabase SQL Editor
+#### Option A: SQLite (Recommended for beginners)
+- **Pros**: Simple setup, no internet required, free, fast local access
+- **Cons**: Single file, limited concurrent access, no cloud backup
+- **Best for**: Local development, testing, small deployments
 
-See `deployment/SUPABASE_SETUP.md` for detailed setup instructions.
+#### Option B: Supabase (Recommended for production)
+- **Pros**: Scalable, cloud backup, real-time features, web dashboard
+- **Cons**: Requires internet, setup complexity, monthly cost
+- **Best for**: Production deployments, team collaboration, large datasets
 
-4. Configure environment variables:
+### 4. Manual Database Setup (Optional)
+
+If you prefer to configure manually, create a `.env` file:
+
+```env
+# For Supabase
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_KEY=your-anon-key-here
+
+# For SQLite (optional)
+SQLITE_DB_PATH=./data/plc_data.db
+```
+
+## Database Management
+
+### Changing Database Type
+
+To switch between database types:
+
+1. **Reset Configuration**: Use the Database Management menu (option 8) in the main application
+2. **Reconfigure**: Restart the application to run the setup wizard again
+3. **Migrate Data**: Use the migration tools to transfer existing data
+
+### Migration Tools
+
+The system includes tools for migrating data between databases:
+
 ```bash
-cp .env.sample .env
-# Edit .env file with your Supabase credentials
+# Migrate from Supabase to SQLite
+python Core\ Application/migration_tools.py --migrate-to-sqlite
+
+# Migrate from SQLite to Supabase  
+python Core\ Application/migration_tools.py --migrate-to-supabase
 ```
+
+### Database Management Menu
+
+The main application includes a Database Management menu (option 8) with options to:
+- View current database configuration
+- Test database connection
+- View database statistics
+- Reset configuration for re-setup
 
 ## Configuration
 

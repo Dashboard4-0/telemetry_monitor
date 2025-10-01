@@ -2,14 +2,15 @@
 
 ## Overview
 
-This guide explains how to deploy the PLC Data Collector using Docker and Docker Compose.
+This guide explains how to deploy the PLC Data Collector using Docker and Docker Compose with support for both Supabase and SQLite databases.
 
 ## Prerequisites
 
 - Docker installed and running
 - Docker Compose installed
 - Network access to your PLCs
-- Supabase account and project
+- **For Supabase**: Supabase account and project
+- **For SQLite**: No additional requirements
 
 ## Quick Start
 
@@ -25,15 +26,26 @@ cd deployment
 
 ### 2. Configure Environment
 
-The build script will create a `.env` file from the template. Edit it with your Supabase credentials:
+The build script will create a `.env` file from the template. Edit it with your database configuration:
 
 ```bash
 nano .env
 ```
 
-Required variables:
-- `SUPABASE_URL`: Your Supabase project URL
-- `SUPABASE_KEY`: Your Supabase anon key
+**Choose ONE database option:**
+
+#### Option A: Supabase (Cloud Database)
+```env
+SUPABASE_URL=https://your-project-id.supabase.co
+SUPABASE_KEY=your-anon-key-here
+```
+
+#### Option B: SQLite (Local Database)
+```env
+SQLITE_DB_PATH=/app/data/plc_data.db
+```
+
+**Note**: If no database environment variables are set, the application will run the interactive setup wizard on first startup.
 
 ### 3. Run the Application
 
