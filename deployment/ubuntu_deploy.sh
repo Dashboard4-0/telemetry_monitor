@@ -265,8 +265,15 @@ EOF
 setup_backup() {
     log_info "Setting up automated backup..."
     
-    # Create backup script
-    cat > $PROJECT_DIR/backup.sh << 'EOF'
+    # Copy backup script from deployment directory if it exists
+    if [ -f "deployment/backup.sh" ]; then
+        cp deployment/backup.sh "$PROJECT_DIR/backup.sh"
+        chmod +x "$PROJECT_DIR/backup.sh"
+        chown "$SERVICE_USER:$SERVICE_USER" "$PROJECT_DIR/backup.sh"
+        log_success "Backup script installed from deployment directory"
+    else
+        # Create backup script using sudo to ensure proper permissions
+        sudo tee "$PROJECT_DIR/backup.sh" > /dev/null << 'EOF'
 #!/bin/bash
 BACKUP_DIR="/opt/backups/plc-collector"
 DATE=$(date +%Y%m%d_%H%M%S)
@@ -279,7 +286,7 @@ if [ -f "data/plc_data.db" ]; then
 fi
 
 # Backup configuration
-tar -czf $BACKUP_DIR/config_$DATE.tar.gz configs/ .env database_config.json
+tar -czf $BACKUP_DIR/config_$DATE.tar.gz configs/ .env database_config.json 2>/dev/null || true
 
 # Cleanup old backups (keep 30 days)
 find $BACKUP_DIR -name "*.db" -mtime +30 -delete
@@ -287,8 +294,11 @@ find $BACKUP_DIR -name "*.tar.gz" -mtime +30 -delete
 
 echo "Backup completed: $DATE"
 EOF
-    
-    chmod +x $PROJECT_DIR/backup.sh
+        
+        sudo chmod +x "$PROJECT_DIR/backup.sh"
+        sudo chown "$SERVICE_USER:$SERVICE_USER" "$PROJECT_DIR/backup.sh"
+        log_success "Backup script created"
+    fi
     
     # Setup cron job
     echo "0 2 * * * $PROJECT_DIR/backup.sh" | sudo crontab -u $SERVICE_USER -
@@ -299,8 +309,15 @@ EOF
 setup_monitoring() {
     log_info "Setting up monitoring..."
     
-    # Create health check script
-    cat > $PROJECT_DIR/health_check.sh << 'EOF'
+    # Copy health check script from deployment directory if it exists
+    if [ -f "deployment/health_check.sh" ]; then
+        cp deployment/health_check.sh "$PROJECT_DIR/health_check.sh"
+        chmod +x "$PROJECT_DIR/health_check.sh"
+        chown "$SERVICE_USER:$SERVICE_USER" "$PROJECT_DIR/health_check.sh"
+        log_success "Health check script installed from deployment directory"
+    else
+        # Create health check script using sudo to ensure proper permissions
+        sudo tee "$PROJECT_DIR/health_check.sh" > /dev/null << 'EOF'
 #!/bin/bash
 
 # Check if service is running
@@ -318,15 +335,18 @@ if [ -f "data/plc_data.db" ]; then
 fi
 
 # Check disk space
-DISK_USAGE=$(df $PROJECT_DIR | awk 'NR==2 {print $5}' | sed 's/%//')
+DISK_USAGE=$(df /opt/plc-data-collector | awk 'NR==2 {print $5}' | sed 's/%//')
 if [ $DISK_USAGE -gt 90 ]; then
     echo "WARNING: Disk usage is ${DISK_USAGE}%"
 fi
 
 echo "OK: All checks passed"
 EOF
-    
-    chmod +x $PROJECT_DIR/health_check.sh
+        
+        sudo chmod +x "$PROJECT_DIR/health_check.sh"
+        sudo chown "$SERVICE_USER:$SERVICE_USER" "$PROJECT_DIR/health_check.sh"
+        log_success "Health check script created"
+    fi
     
     log_success "Monitoring configured"
 }
